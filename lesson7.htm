@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 7: Read Analog Value and Display over USART</title>
+    <style>
+		h2{
+		text-align : center;
+	    color : #008080 ; 
+		}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-container {
+            display: flex;
+        }
+        .lesson-text {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-code {
+            width: 50%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        .content iframe {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side: Menu with Buttons for Navigation -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/index.htm'">Back to Main Page</button>
+    </div>
+
+    <!-- Right Side: Lesson 7 Content -->
+    <div class="content">
+        <div class="lesson-container">
+            <div class="lesson-text">
+                <h2>Lesson 7: Read Analog Value and Display over USART</h2>
+                <p>In this lesson, we will learn how to read an analog value from pin PA0 on the STM32F0xx microcontroller and display the value over USART1. We will include the header <code>#include "stm32f0xx.h"</code> in our code.</p>
+                <p>Watch the tutorial video:</p>
+                <iframe height="315" src="https://www.youtube.com/embed/YOUR_LESSON7_YOUTUBE_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-code">
+                <button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre style = "background-color : #F0FFFF;"><code id="code-block">
+// Include the STM32F0xx header
+#include "stm32f0xx.h"
+
+// Initialize ADC
+void ADC_Init(void) {
+    // Enable clock for GPIOA and ADC
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    RCC->APB2ENR |= RCC_APB2ENR_ADCEN;
+
+    // Set PA0 to analog mode
+    GPIOA->MODER |= GPIO_MODER_MODER0;
+
+    // ADC configuration
+    ADC1->CR = ADC_CR_ADEN;  // Enable ADC
+    while (!(ADC1->ISR & ADC_ISR_ADRDY));  // Wait until ADC is ready
+}
+
+// Read ADC value from a specified channel
+uint16_t ADC_Read(uint32_t channel) {
+    ADC1->CHSELR = channel;  // Select channel
+    ADC1->CR |= ADC_CR_ADSTART;  // Start conversion
+    while (!(ADC1->ISR & ADC_ISR_EOC));  // Wait for conversion to complete
+    return ADC1->DR;  // Return the ADC value
+}
+
+// Initialize USART1
+void USART1_Init(void) {
+    // Enable clock for GPIOA and USART1
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+
+    // Set PA9 (TX) and PA10 (RX) to alternate function mode
+    GPIOA->MODER |= GPIO_MODER_MODER9_1 | GPIO_MODER_MODER10_1;
+    GPIOA->AFR[1] |= (1 << 4) | (1 << 8);  // AF1 for PA9 and PA10
+
+    // Configure USART1
+    USART1->BRR = 480000 / 96;  // Set baud rate to 9600 (assuming 48MHz clock)
+    USART1->CR1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_UE;  // Enable USART, transmitter and receiver
+}
+
+// Send a character over USART1
+void USART1_SendChar(char c) {
+    while (!(USART1->ISR & USART_ISR_TXE));  // Wait until transmit data register is empty
+    USART1->TDR = c;  // Transmit data
+}
+
+// Send a string over USART1
+void USART1_SendString(const char* str) {
+    while (*str) {
+        USART1_SendChar(*str++);
+    }
+}
+
+int main(void) {
+    // Initialize ADC and USART1
+    ADC_Init();
+    USART1_Init();
+
+    uint16_t adc_value;
+    char buffer[10];
+
+    while (1) {
+        // Read ADC value from PA0
+        adc_value = ADC_Read(ADC_CHSELR_CHSEL0);
+
+        // Convert ADC value to string and send via USART1
+        sprintf(buffer, "%u\n", adc_value);
+        USART1_SendString(buffer);
+
+        // Small delay (simple loop)
+        for (volatile int i = 0; i < 100000; i++);
+    }
+
+    // We should never reach here
+    return 0;
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+    <script>
+        function copyCode() {
+            var code = document.getElementById("code-block").innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 4: Display "Hello World" via USART1</title>
+    <style>
+		h2{
+		text-align : center;
+	    color : #008080 ; 
+		}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-container {
+            display: flex;
+        }
+        .lesson-text {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-code {
+            width: 50%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        .content iframe {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side: Menu with Buttons for Navigation -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/index.htm'">Back to Main Page</button>
+    </div>
+
+    <!-- Right Side: Lesson 4 Content -->
+    <div class="content">
+        <div class="lesson-container">
+            <div class="lesson-text">
+                <h2>Lesson 4: Display "Hello World" via USART1</h2>
+                <p>In this lesson, we will learn how to send the message "Hello World" via USART1 on the STM32F0xx microcontroller. We will include the header <code>#include "stm32f0xx.h"</code> in our code.</p>
+                <p>Watch the tutorial video:</p>
+                <iframe height="315" src="https://www.youtube.com/embed/YOUR_LESSON4_YOUTUBE_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-code">
+                <button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre style = "background-color : #F0FFFF;"><code id="code-block">
+// Include the STM32F0xx header
+#include "stm32f0xx.h"
+
+// Initialize USART1
+void USART1_Init(void) {
+    // Enable clock for GPIOA and USART1
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+
+    // Set PA9 to alternate function (AF1 for USART1_TX)
+    GPIOA->MODER |= GPIO_MODER_MODER9_1;
+    GPIOA->AFR[1] |= 0x01 << (1 * 4); // AFR[1] for PA8-PA15, 1*4 for PA9
+
+    // Set baud rate to 9600
+    USART1->BRR = 480000 / 96;
+
+    // Enable USART1 and its transmitter
+    USART1->CR1 = USART_CR1_UE | USART_CR1_TE;
+}
+
+// Send a character via USART1
+void USART1_SendChar(char c) {
+    // Wait until the transmit data register is empty
+    while (!(USART1->ISR & USART_ISR_TXE));
+    // Send the character
+    USART1->TDR = c;
+}
+
+// Send a string via USART1
+void USART1_SendString(const char *str) {
+    while (*str) {
+        USART1_SendChar(*str++);
+    }
+}
+
+int main(void) {
+    // Initialize USART1
+    USART1_Init();
+    
+    // Send "Hello World" message
+    USART1_SendString("Hello World\r\n");
+    
+    // Main loop
+    while (1) {
+        // Keep looping
+    }
+
+    // We should never reach here
+    return 0;
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+    <script>
+        function copyCode() {
+            var code = document.getElementById("code-block").innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

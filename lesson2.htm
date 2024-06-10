@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Sweep Servo</title>
+    <style>
+		h2{
+		text-align : center;
+	    color : #008080 ; 
+		}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-container {
+            display: flex;
+        }
+        .lesson-text {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-code {
+            width: 50%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+			position: relative;
+        }
+        .content iframe {
+            margin-top: 20px;
+            width: 100%;
+        }
+		.copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side: Menu with Buttons for Navigation -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/index.htm'">Back to Main Page</button>
+    </div>
+
+    <!-- Right Side: Lesson 2 Content -->
+    <div class="content">
+        <div class="lesson-container">
+            <div class="lesson-text">
+                <h2>Lesson 2: Sweep Servo using STM32F0xx</h2>
+                <p>In this lesson, we will learn how to control a servo motor connected to pin PA4 on the STM32F0xx microcontroller. The servo will sweep back and forth. We will include the header <code>#include "stm32f0xx.h"</code> in our code.</p>
+                <p>Watch the tutorial video:</p>
+                <iframe height="315" src="https://www.youtube.com/embed/YOUR_LESSON2_YOUTUBE_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-code">
+				<button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre style = "background-color : #F0FFFF;"><code id="code-block">
+// Include the STM32F0xx header
+#include "stm32f0xx.h"
+
+// Simple delay function
+void delay(int a) {
+    volatile int i, j;
+    for (i = 0; i < a; i++) {
+        j++;
+    }
+}
+
+// Initialize TIM3 for PWM
+void TIM3_Init() {
+    // Enable clock for TIM3
+    RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+    
+    // Enable clock for GPIOA
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    
+    // Set PA4 to alternate function (AF1 for TIM3)
+    GPIOA->MODER |= GPIO_MODER_MODER4_1;
+    GPIOA->AFR[0] |= 0x01 << (4 * 4); // AFR[0] for PA0-PA7, 4*4 for PA4
+    
+    // Set prescaler and auto-reload for 50Hz (20ms period)
+    TIM3->PSC = 480 - 1; // Prescaler
+    TIM3->ARR = 1000 - 1; // Auto-reload
+    
+    // Set PWM mode 1 on channel 1 and enable output compare
+    TIM3->CCMR1 |= TIM_CCMR1_OC1M_PWM1 | TIM_CCMR1_OC1PE;
+    TIM3->CCER |= TIM_CCER_CC1E;
+    
+    // Enable TIM3
+    TIM3->CR1 |= TIM_CR1_CEN;
+}
+
+// Set servo angle (0 to 180 degrees)
+void set_servo_angle(int angle) {
+    // Calculate pulse width (1ms to 2ms for 0 to 180 degrees)
+    int pulse_width = 50 + (angle * 100 / 180);
+    TIM3->CCR1 = pulse_width;
+}
+
+int main(void) {
+    // Initialize TIM3 for PWM
+    TIM3_Init();
+    
+    while (1) {
+        // Sweep from 0 to 180 degrees
+        for (int angle = 0; angle <= 180; angle += 5) {
+            set_servo_angle(angle);
+            delay(20000);
+        }
+        // Sweep from 180 to 0 degrees
+        for (int angle = 180; angle >= 0; angle -= 5) {
+            set_servo_angle(angle);
+            delay(20000);
+        }
+    }
+    
+    // We should never reach here
+    return 0;
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+	<script>
+        function copyCode() {
+            var code = document.getElementById("code-block").innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

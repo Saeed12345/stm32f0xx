@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32F0xx MCU Educational Series</title>
+    <style>
+        
+		h2 {
+            text-align: center;
+            color: #4B0082;
+        }
+
+        body {
+            font-family: Calibri Light, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .menu {
+            margin-top: 60px;
+            width: 20%;
+            background-color: #FFE4E1;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #66CDAA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+	
+
+        .media-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .media-container img {
+            width: 45%;
+            margin-right: 30px;
+        }
+
+        .media-container iframe {
+            width: 50%;
+        }
+
+        /* Added styles for text formatting */
+        .content div {
+            font-family: Calibri Light, sans-serif;
+            text-align: justify;
+            text-align-last: justify; /* Distribute evenly between margins */
+        }
+    </style>
+</head>
+<body>
+    <!-- Counter Label -->
+    <div id="counter-label" style="color: white; text-align: center; margin-bottom: 20px; height: 15%; background-color: #008080; margin-top: 60px;">
+        Visitor Counter: <span id="counter">0</span>
+    </div>
+    <!-- Left Side: Menu with Buttons for 10 Lessons -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson1.htm'">Lesson 1: Blink_LED</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson2.htm'">Lesson 2: Seep_Servo</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson3.htm'">Lesson 3: PushButton_ToggleLED</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson4.htm'">Lesson 4: USART1</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson5.htm'">Lesson 5: ReadAnalog_1</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson6.htm'">Lesson 6: ReadAnalog_2</button>
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/lesson7.htm'">Lesson 7: ReadAnalog_UART_Display</button>
+        <button onclick="showLesson(8)">Lesson 8</button>
+        <button onclick="showLesson(9)">Lesson 9</button>
+        <button onclick="showLesson(10)">Lesson 10</button>
+    </div>
+
+    <!-- Right Side: Introduction and YouTube URL -->
+    <div class="content" id="lesson-content">
+        <h2 style =  "background-color : #F0FFFF;">About STM32F0xx Microcontrollers</h2>
+        <p style="font-size:120%; ">STMicroelectronics' STM32F0xx microcontrollers (MCUs) are part of the STM32F0 series, which is based on the ARM Cortex-M0 processor core. These MCUs are designed for cost-sensitive applications requiring low-power consumption and high performance. Here are some key features and characteristics of the STM32F0xx MCUs:</p>
+        <ol style="font-size:120%;">
+            <li><strong>ARM Cortex-M0 Core:</strong> The STM32F0xx MCUs are built around the ARM Cortex-M0 core, which is a 32-bit RISC processor core designed for embedded systems.</li>
+            <li><strong>Peripheral Integration:</strong> These MCUs feature a wide range of integrated peripherals, including timers, UARTs, SPI, I2C, ADCs, DACs, and more. This integration allows for efficient system design and reduces the need for external components.</li>
+            <li><strong>Low-Power Operation:</strong> STM32F0xx MCUs are optimized for low-power operation, making them suitable for battery-powered and energy-efficient applications. They offer multiple low-power modes to minimize power consumption during idle periods.</li>
+            <li><strong>Rich Development Ecosystem:</strong> STMicroelectronics provides a comprehensive development ecosystem for STM32F0xx MCUs, including development boards, software development tools (such as STM32CubeMX and STM32CubeIDE), middleware libraries, and extensive documentation.</li>
+            <li><strong>Peripherals and Communication Interfaces:</strong> These MCUs support a variety of communication interfaces, including UART, SPI, I2C, USB, CAN, and LIN. They also feature advanced analog peripherals such as ADCs and DACs for precision measurement and control applications.</li>
+            <li><strong>Rich Set of GPIOs:</strong> STM32F0xx MCUs offer a rich set of general-purpose I/O (GPIO) pins, which can be configured and used for various purposes, including digital input/output, analog input, PWM output, and more.</li>
+            <li><strong>Security Features:</strong> To address security concerns in embedded systems, STM32F0xx MCUs provide hardware-based security features such as memory protection units (MPUs), read-out protection, and cryptographic accelerators.</li>
+            <li><strong>Variety of Package Options:</strong> These MCUs are available in a variety of package options, including QFP, LQFP, BGA, and WLCSP, to suit different application requirements and board space constraints.</li>
+        </ol>
+        <p style="font-size:120%;">Overall, STM32F0xx MCUs are popular choices for a wide range of embedded applications, including consumer electronics, industrial automation, automotive systems, and more, due to their combination of performance, features, and cost-effectiveness.</p>
+        <div class="media-container">
+           <img src="F:\HTMLproject\images\myDev-Board.jpg" alt="stm320f0k6t6_Dev_Board">
+		   <img src="F:\HTMLproject\images\easyEDA.jpg" alt="stm320f0k6t6_Dev_Board">
+           
+        </div>
+    </div>
+	
+	
+
+    <script>
+        // JavaScript code for the counter
+        let counterValue = 0;
+        const counterElement = document.getElementById('counter');
+
+        function incrementCounter() {
+            counterValue++;
+            counterElement.textContent = counterValue;
+        }
+
+        // Call incrementCounter() whenever a visitor accesses the page
+        incrementCounter();
+
+        function showLesson(lessonNumber) {
+            const lessonContent = document.getElementById('lesson-content');
+            lessonContent.innerHTML = `<h2>Lesson ${lessonNumber}</h2><p>This is the content for lesson ${lessonNumber}.</p>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: Blink LED</title>
+    <style>
+		h2{
+		text-align : center;
+	    color : #008080 ; 
+		}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-container {
+            display: flex;
+        }
+        .lesson-text {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-code {
+            width: 50%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .content iframe {
+            margin-top: 20px;
+            width: 100%;
+        }
+		.copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side: Menu with Buttons for Navigation -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/index.htm'">Back to Main Page</button>
+    </div>
+
+    <!-- Right Side: Lesson 1 Content -->
+    <div class="content">
+        <div class="lesson-container">
+            <div class="lesson-text">
+                <h2>Lesson 1: Blink LED using Bare Metal Programming</h2>
+                <p>In this lesson, we will learn how to blink an LED connected to pin PA5 on the STM32F0xx microcontroller using bare metal programming. We will include the header <code>#include "stm32f0xx.h"</code> in our code.</p>
+                <p>Watch the tutorial video:</p>
+                <iframe height="315" src="https://www.youtube.com/embed/YOUR_LESSON1_YOUTUBE_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-code">
+				 <button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre style = "background-color : #F0FFFF;"><code id="code-block">
+// Include the STM32F0xx header
+#include "stm32f0xx.h"
+
+void delay(int a) {
+    volatile int i, j;
+    for (i = 0; i < a; i++) {
+        j++;
+    }
+}
+
+int main(void) {
+    // Enable clock for GPIOA
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+
+    // Set PA5 as output
+    GPIOA->MODER |= GPIO_MODER_MODER5_0;
+
+    while (1) {
+        // Toggle PA5
+        GPIOA->ODR ^= GPIO_ODR_5;
+
+        // Delay
+        delay(100000);
+    }
+
+    // We should never reach here
+    return 0;
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+	 <script>
+        function copyCode() {
+            var code = document.getElementById("code-block").innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

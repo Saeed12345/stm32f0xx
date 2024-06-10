@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: Toggle LED with Push Button</title>
+    <style>
+		h2{
+		text-align : center;
+	    color : #008080 ; 
+		}
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .menu {
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .menu button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-container {
+            display: flex;
+        }
+        .lesson-text {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .lesson-code {
+            width: 50%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        .content iframe {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }	
+    </style>
+</head>
+<body>
+    <!-- Left Side: Menu with Buttons for Navigation -->
+    <div class="menu">
+        <button onclick="location.href='file:///F:/HTMLproject/html-files/index.htm'">Back to Main Page</button>
+    </div>
+
+    <!-- Right Side: Lesson 3 Content -->
+    <div class="content">
+        <div class="lesson-container">
+            <div class="lesson-text">
+                <h2>Lesson 3: Toggle LED with Push Button</h2>
+                <p>In this lesson, we will learn how to toggle an LED connected to pin PA11 using a push button connected to pin PB4 on the STM32F0xx microcontroller. We will include the header <code>#include "stm32f0xx.h"</code> in our code.</p>
+                <p>Watch the tutorial video:</p>
+                <iframe height="315" src="https://www.youtube.com/embed/YOUR_LESSON3_YOUTUBE_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-code">
+                <button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre style = "background-color : #F0FFFF;"><code id="code-block">
+// Include the STM32F0xx header
+#include "stm32f0xx.h"
+
+// Simple delay function
+void delay(int a) {
+    volatile int i, j;
+    for (i = 0; i < a; i++) {
+        j++;
+    }
+}
+
+int main(void) {
+    // Enable clock for GPIOA and GPIOB
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+
+    // Set PA11 as output
+    GPIOA->MODER |= GPIO_MODER_MODER11_0;
+
+    // Set PB4 as input
+    GPIOB->MODER &= ~GPIO_MODER_MODER4;
+
+    // Enable pull-down resistor for PB4
+    GPIOB->PUPDR |= GPIO_PUPDR_PUPDR4_1;
+
+    int led_state = 0;
+
+    while (1) {
+        // Check if button is pressed (PB4 is low)
+        if ((GPIOB->IDR & GPIO_IDR_4) == 0) {
+            // Debounce delay
+            delay(10000);
+
+            // Check again to confirm button press
+            if ((GPIOB->IDR & GPIO_IDR_4) == 0) {
+                // Toggle LED state
+                led_state = !led_state;
+
+                // Set or reset PA11 based on led_state
+                if (led_state) {
+                    GPIOA->ODR |= GPIO_ODR_11;
+                } else {
+                    GPIOA->ODR &= ~GPIO_ODR_11;
+                }
+
+                // Wait for button release
+                while ((GPIOB->IDR & GPIO_IDR_4) == 0);
+            }
+        }
+    }
+
+    // We should never reach here
+    return 0;
+}
+                </code></pre>
+            </div>
+        </div>
+    </div>
+    <script>
+        function copyCode() {
+            var code = document.getElementById("code-block").innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Failed to copy code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
